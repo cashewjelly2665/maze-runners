@@ -33,11 +33,48 @@
     button:hover {
       background: #6677ff;
     }
+    input {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #888;
+      width: 220px;
+      text-align: center;
+      margin-top: 10px;
+      display: none;
+    }
   </style>
 </head>
 <body>
   <h1>Maze Runners</h1>
-  <button>Create</button>
-  <button>Join</button>
+
+  <button id="createBtn">Create</button>
+  <button id="joinBtn">Join</button>
+
+  <input id="seedInput" placeholder="Enter seed (optional)">
+  <button id="confirmCreate" style="display:none;">Create Maze</button>
+
+  <script>
+    const createBtn = document.getElementById("createBtn");
+    const joinBtn = document.getElementById("joinBtn");
+    const seedInput = document.getElementById("seedInput");
+    const confirmCreate = document.getElementById("confirmCreate");
+
+    createBtn.onclick = () => {
+      createBtn.style.display = "none";
+      joinBtn.style.display = "none";
+
+      seedInput.style.display = "block";
+      confirmCreate.style.display = "block";
+    };
+
+    confirmCreate.onclick = () => {
+      const seed = seedInput.value;
+      alert("Creating maze with seed: " + (seed || "random"));
+    };
+
+    joinBtn.onclick = () => {
+      alert("Join maze clicked!");
+    };
+  </script>
 </body>
 </html>
