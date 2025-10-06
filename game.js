@@ -45,13 +45,13 @@ function drawMaze() {
       ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
     }
   }
-  // Draw player 1 (red)
+
   ctx.fillStyle = "red";
   ctx.fillRect(player.x * cellWidth, player.y * cellHeight, cellWidth, cellHeight);
 
-  // Draw player 2 (blue)
   ctx.fillStyle = "blue";
   ctx.fillRect(player2.x * cellWidth, player2.y * cellHeight, cellWidth, cellHeight);
+}
 
 function checkWin() {
   if (player.x === player2.x && player.y === player2.y) {
