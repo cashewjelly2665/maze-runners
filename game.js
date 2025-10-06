@@ -10,7 +10,10 @@ const mazeSize = 20;
 const cellWidth = canvas.width / mazeSize;
 const cellHeight = canvas.height / mazeSize;
 let maze = [];
-let player = { x: 0, y: 0 };
+let player = { x: 0, y: 0 }; // red, top left
+let player2 = { x: mazeSize - 1, y: 0 }; // blue, top right
+let gameOver = false;
+let lastMovedPlayer = null; // 1 for red, 2 for blue
 
 function getRandom(seed) {
   if (!seed) seed = Math.random() * 10000;
@@ -30,6 +33,7 @@ function generateMaze(seedFunc) {
   }
   m[0][0] = 0;
   m[mazeSize-1][mazeSize-1] = 0;
+  m[0][mazeSize-1] = 0; // ensure blue's start is open
   return m;
 }
 
@@ -41,28 +45,71 @@ function drawMaze() {
       ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
     }
   }
-  // Draw player
+  // Draw player 1 (red)
   ctx.fillStyle = "red";
   ctx.fillRect(player.x * cellWidth, player.y * cellHeight, cellWidth, cellHeight);
+
+  // Draw player 2 (blue)
+  ctx.fillStyle = "blue";
+  ctx.fillRect(player2.x * cellWidth, player2.y * cellHeight, cellWidth, cellHeight);
+}
+
+function checkWin() {
+  if (player.x === player2.x && player.y === player2.y) {
+    gameOver = true;
+    setTimeout(() => {
+      if (lastMovedPlayer === 1) {
+        alert("Red wins!");
+      } else if (lastMovedPlayer === 2) {
+        alert("Blue wins!");
+      } else {
+        alert("It's a tie!");
+      }
+    }, 50);
+  }
 }
 
 function movePlayer(dx, dy) {
+  if (gameOver) return;
   const newX = player.x + dx;
   const newY = player.y + dy;
   if (newX >= 0 && newX < mazeSize && newY >= 0 && newY < mazeSize) {
     if (maze[newY][newX] === 0) {
       player.x = newX;
       player.y = newY;
+      lastMovedPlayer = 1;
     }
   }
   drawMaze();
+  checkWin();
+}
+
+function movePlayer2(dx, dy) {
+  if (gameOver) return;
+  const newX = player2.x + dx;
+  const newY = player2.y + dy;
+  if (newX >= 0 && newX < mazeSize && newY >= 0 && newY < mazeSize) {
+    if (maze[newY][newX] === 0) {
+      player2.x = newX;
+      player2.y = newY;
+      lastMovedPlayer = 2;
+    }
+  }
+  drawMaze();
+  checkWin();
 }
 
 document.addEventListener("keydown", e => {
+  if (gameOver) return;
   if (e.key === "w") movePlayer(0, -1);
   else if (e.key === "s") movePlayer(0, 1);
   else if (e.key === "a") movePlayer(-1, 0);
   else if (e.key === "d") movePlayer(1, 0);
+
+  else if (e.key === "ArrowUp") movePlayer2(0, -1);
+  else if (e.key === "ArrowDown") movePlayer2(0, 1);
+  else if (e.key === "ArrowLeft") movePlayer2(-1, 0);
+  else if (e.key === "ArrowRight") movePlayer2(1, 0);
 });
 
 createBtn.onclick = () => {
@@ -87,6 +134,9 @@ confirmCreate.onclick = () => {
   const randomFunc = getRandom(seedValue || Math.random()*10000);
   maze = generateMaze(randomFunc);
   player = { x: 0, y: 0 };
+  player2 = { x: mazeSize - 1, y: 0 }; // top right
+  gameOver = false;
+  lastMovedPlayer = null;
   canvas.style.display = "block";
   drawMaze();
 };
