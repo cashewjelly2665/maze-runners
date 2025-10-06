@@ -37,6 +37,7 @@ function generateMaze(seedFunc) {
   return m;
 }
 
+// UPDATED DEBUG DRAW FUNCTION
 function drawMaze() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let y = 0; y < mazeSize; y++) {
@@ -45,12 +46,19 @@ function drawMaze() {
       ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
     }
   }
-
+  // Draw player 1 (red)
   ctx.fillStyle = "red";
   ctx.fillRect(player.x * cellWidth, player.y * cellHeight, cellWidth, cellHeight);
-  
+
+  // Draw player 2 (blue), make it huge for debugging!
   ctx.fillStyle = "blue";
   ctx.fillRect(player2.x * cellWidth, player2.y * cellHeight, cellWidth * 4, cellHeight * 4);
+
+  // Optional: label the top right cell for further debugging
+  ctx.fillStyle = "yellow";
+  ctx.font = "bold 12px Arial";
+  ctx.fillText("TR", player2.x * cellWidth + 2, player2.y * cellHeight + 14);
+}
 
 function checkWin() {
   if (player.x === player2.x && player.y === player2.y) {
