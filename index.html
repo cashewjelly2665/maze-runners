@@ -45,7 +45,7 @@
       width: 220px;
       text-align: center;
       margin-top: 10px;
-      display: none; /* hidden initially */
+      display: none;
     }
   </style>
 </head>
@@ -61,6 +61,9 @@
   <input id="seedInput" placeholder="Enter seed (optional)">
   <button id="confirmCreate" style="display:none;">Create Maze</button>
   <button id="backBtn" style="display:none;">Back</button>
+
+  <!-- Script -->
+  <canvas id="mazeCanvas" width="400" height="400" style="display:none;"></canvas>
 
   <script>
     const createBtn = document.getElementById("createBtn");
