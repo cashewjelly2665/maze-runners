@@ -51,7 +51,7 @@ function drawMaze() {
 
   // Draw player 2 (blue)
   ctx.fillStyle = "blue";
-  ctx.fillRect(player2.x * cellWidth, player2.y * cellHeight, cellWidth * 4, cellHeight * 4);
+  ctx.fillRect(player2.x * cellWidth, player2.y * cellHeight, cellWidth, cellHeight);
 
 function checkWin() {
   if (player.x === player2.x && player.y === player2.y) {
