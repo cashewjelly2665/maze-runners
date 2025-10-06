@@ -15,22 +15,30 @@ let player2 = { x: mazeSize - 1, y: 0 }; // blue, top right
 let gameOver = false;
 let lastMovedPlayer = null; // 1 for red, 2 for blue
 
-function getRandom(seed) {
-  if (!seed) seed = Math.random() * 10000;
+const keys = {};
+document.addEventListener("keydown", e => { keys[e.key] = true; });
+document.addEventListener("keyup", e => { keys[e.key] = false; });
+
+function seededRandom(seed) {
+  let x = Math.sin(seed) * 10000;
   return function() {
-    seed = (seed * 9301 + 49297) % 233280;
-    return seed / 233280;
+    x = Math.sin(x) * 10000;
+    return x - Math.floor(x);
   };
 }
 
-function generateMazeDFS(size) {
+function generateMazeDFS(size, rng) {
   const maze = Array.from({ length: size }, () => Array(size).fill(1));
 
   function carve(x, y) {
     maze[y][x] = 0;
     const dirs = [
       [0, -2], [0, 2], [-2, 0], [2, 0]
-    ].sort(() => Math.random() - 0.5);
+    ];
+    for (let i = dirs.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [dirs[i], dirs[j]] = [dirs[j], dirs[i]];
+    }
     for (const [dx, dy] of dirs) {
       const nx = x + dx;
       const ny = y + dy;
@@ -115,6 +123,22 @@ function movePlayer2(dx, dy) {
   checkWin();
 }
 
+function gameLoop() {
+  if (!gameOver) {
+    // Player 1 (red, WASD)
+    if (keys["w"]) movePlayer(0, -1);
+    if (keys["s"]) movePlayer(0, 1);
+    if (keys["a"]) movePlayer(-1, 0);
+    if (keys["d"]) movePlayer(1, 0);
+    // Player 2 (blue, arrows)
+    if (keys["ArrowUp"]) movePlayer2(0, -1);
+    if (keys["ArrowDown"]) movePlayer2(0, 1);
+    if (keys["ArrowLeft"]) movePlayer2(-1, 0);
+    if (keys["ArrowRight"]) movePlayer2(1, 0);
+  }
+  setTimeout(gameLoop, 100);
+}
+
 createBtn.onclick = () => {
   createBtn.style.display = "none";
   joinBtn.style.display = "none";
@@ -134,13 +158,16 @@ backBtn.onclick = () => {
 
 confirmCreate.onclick = () => {
   const seedValue = seedInput.value;
-  maze = generateMazeDFS(mazeSize);
+  const seed = seedValue === "" ? Math.floor(Math.random() * 1000000) : parseInt(seedValue.split('').map(c=>c.charCodeAt(0)).join(''));
+  const rng = seededRandom(seed);
+  maze = generateMazeDFS(mazeSize, rng);
   player = { x: 0, y: 0 };
   player2 = { x: mazeSize - 1, y: 0 };
   gameOver = false;
   lastMovedPlayer = null;
   canvas.style.display = "block";
   drawMaze();
+  gameLoop();
 };
 
 joinBtn.onclick = () => {
