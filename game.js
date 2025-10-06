@@ -1,5 +1,5 @@
 const createBtn = document.getElementById("createBtn");
-const joinBtn = document.getElementById("joinBtn");
+const timedTagBtn = document.getElementById("timedTagBtn");
 const seedInput = document.getElementById("seedInput");
 const confirmCreate = document.getElementById("confirmCreate");
 const backBtn = document.getElementById("backBtn");
@@ -141,7 +141,7 @@ function gameLoop() {
 
 createBtn.onclick = () => {
   createBtn.style.display = "none";
-  joinBtn.style.display = "none";
+  timedTagBtn.style.display = "none";
   seedInput.style.display = "block";
   confirmCreate.style.display = "block";
   backBtn.style.display = "block";
@@ -149,7 +149,7 @@ createBtn.onclick = () => {
 
 backBtn.onclick = () => {
   createBtn.style.display = "block";
-  joinBtn.style.display = "block";
+  timedTagBtn.style.display = "block";
   seedInput.style.display = "none";
   confirmCreate.style.display = "none";
   backBtn.style.display = "none";
@@ -170,6 +170,6 @@ confirmCreate.onclick = () => {
   gameLoop();
 };
 
-joinBtn.onclick = () => {
+timedTagBtn.onclick = () => {
   alert("Join maze clicked!");
 };
