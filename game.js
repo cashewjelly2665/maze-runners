@@ -47,15 +47,8 @@ function generateMazeDFS(size) {
   if (size % 2 === 0) size -= 1;
   carve(0, 0);
 
-  maze[0][size - 1] = 0;
-
-  if (maze.length < size) {
-    const newMaze = Array.from({ length: size + 1 }, (_, y) =>
-      Array.from({ length: size + 1 }, (_, x) =>
-        y < maze.length && x < maze.length ? maze[y][x] : 0
-      )
-    );
-    return newMaze;
+  for (let x = 0; x < size; x++) {
+    maze[0][x] = 0;
   }
 
   return maze;
