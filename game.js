@@ -8,11 +8,9 @@ const timerDisplay = document.getElementById("timerDisplay");
 const ctx = canvas.getContext("2d");
 
 const mazeSize = 20;
-const cellWidth = canvas.width / mazeSize;
-const cellHeight = canvas.height / mazeSize;
 let maze = [];
 let player = { x: 0, y: 0 }; // red, top left
-let player2 = { x: mazeSize - 1, y: 0 }; // blue, top right
+let player2 = { x: 0, y: 0 }; // will be set after maze generation
 let gameOver = false;
 let lastMovedPlayer = null; // 1 for red, 2 for blue
 
@@ -34,8 +32,8 @@ function seededRandom(seed) {
 }
 
 function generateMazeDFS(size, rng) {
+  if (size % 2 === 0) size -= 1;
   const maze = Array.from({ length: size }, () => Array(size).fill(1));
-
   function carve(x, y) {
     maze[y][x] = 0;
     const dirs = [
@@ -57,33 +55,33 @@ function generateMazeDFS(size, rng) {
       }
     }
   }
-
-  if (size % 2 === 0) size -= 1;
   carve(0, 0);
-
   for (let x = 0; x < size; x++) {
     maze[0][x] = 0;
   }
-
   return maze;
 }
 
 function drawMaze() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (let y = 0; y < mazeSize; y++) {
-    for (let x = 0; x < mazeSize; x++) {
+  if (!maze.length || !maze[0].length) return;
+  const rows = maze.length;
+  const cols = maze[0].length;
+  const cellWidth = canvas.width / cols;
+  const cellHeight = canvas.height / rows;
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
       ctx.fillStyle = maze[y][x] ? "#000" : "#fff";
       ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
     }
   }
-
   // Draw player 1 (red)
   ctx.fillStyle = "red";
   ctx.fillRect(player.x * cellWidth, player.y * cellHeight, cellWidth, cellHeight);
   // Draw player 2 (blue)
   ctx.fillStyle = "blue";
   ctx.fillRect(player2.x * cellWidth, player2.y * cellHeight, cellWidth, cellHeight);
-
+  // Draw yellow border around "it" player in tag mode
   if (tagActive) {
     ctx.strokeStyle = "yellow";
     ctx.lineWidth = 4;
@@ -113,9 +111,10 @@ function checkWin() {
 
 function movePlayer(dx, dy) {
   if (gameOver) return;
+  const rows = maze.length, cols = maze[0].length;
   const newX = player.x + dx;
   const newY = player.y + dy;
-  if (newX >= 0 && newX < mazeSize && newY >= 0 && newY < mazeSize) {
+  if (newX >= 0 && newX < cols && newY >= 0 && newY < rows) {
     if (maze[newY][newX] === 0) {
       player.x = newX;
       player.y = newY;
@@ -129,9 +128,10 @@ function movePlayer(dx, dy) {
 
 function movePlayer2(dx, dy) {
   if (gameOver) return;
+  const rows = maze.length, cols = maze[0].length;
   const newX = player2.x + dx;
   const newY = player2.y + dy;
-  if (newX >= 0 && newX < mazeSize && newY >= 0 && newY < mazeSize) {
+  if (newX >= 0 && newX < cols && newY >= 0 && newY < rows) {
     if (maze[newY][newX] === 0) {
       player2.x = newX;
       player2.y = newY;
@@ -145,12 +145,10 @@ function movePlayer2(dx, dy) {
 
 function gameLoop() {
   if (!gameOver) {
-    // Player 1 (red, WASD)
     if (keys["w"]) movePlayer(0, -1);
     if (keys["s"]) movePlayer(0, 1);
     if (keys["a"]) movePlayer(-1, 0);
     if (keys["d"]) movePlayer(1, 0);
-    // Player 2 (blue, arrows)
     if (keys["ArrowUp"]) movePlayer2(0, -1);
     if (keys["ArrowDown"]) movePlayer2(0, 1);
     if (keys["ArrowLeft"]) movePlayer2(-1, 0);
@@ -199,8 +197,9 @@ confirmCreate.onclick = () => {
   const seed = seedValue === "" ? Math.floor(Math.random() * 1000000) : parseInt(seedValue.split('').map(c=>c.charCodeAt(0)).join(''));
   const rng = seededRandom(seed);
   maze = generateMazeDFS(mazeSize, rng);
+  // Set players to valid start cells
   player = { x: 0, y: 0 };
-  player2 = { x: mazeSize - 1, y: 0 };
+  player2 = { x: maze[0].length - 1, y: 0 };
   gameOver = false;
   lastMovedPlayer = null;
   canvas.style.display = "block";
@@ -216,7 +215,7 @@ timedTagBtn.onclick = () => {
   const rng = seededRandom(seed);
   maze = generateMazeDFS(mazeSize, rng);
   player = { x: 0, y: 0 };
-  player2 = { x: mazeSize - 1, y: 0 };
+  player2 = { x: maze[0].length - 1, y: 0 };
   gameOver = false;
   lastMovedPlayer = null;
   canvas.style.display = "block";
