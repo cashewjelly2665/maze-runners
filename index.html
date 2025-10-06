@@ -15,15 +15,6 @@
       height: 100vh;
       overflow: hidden;
     }
-    h1 {
-      font-size: 3em;
-      margin-bottom: 0.5em;
-    }
-    h3 {
-      font-size: 1.5em;
-      margin-bottom: 20px;
-      text-align: center;
-    }
     button {
       background: #4455ff;
       color: white;
@@ -47,22 +38,24 @@
       margin-top: 10px;
       display: none;
     }
+    #confirmCreate, #backBtn {
+      display: none;
+    }
+    #mazeCanvas {
+      display: none;
+      border: 4px solid orange;
+    }
   </style>
 </head>
 <body>
   <h1>Maze Runners</h1>
   <h3>Mayhem in a maze!</h3>
-
-  <!-- Main buttons -->
   <button id="createBtn">Create</button>
   <button id="joinBtn">Join</button>
-
-  <!-- Seed input section -->
   <input id="seedInput" placeholder="Enter seed (optional)">
-  <button id="confirmCreate" style="display:none;">Create Maze</button>
-  <button id="backBtn" style="display:none;">Back</button>
-
-  <canvas id="mazeCanvas" width="400" height="400" style="display:none; border: 4px solid orange;"></canvas>
-  <script src="game.js"></script>
+  <button id="confirmCreate">Create Maze</button>
+  <button id="backBtn">Back</button>
+  <canvas id="mazeCanvas" width="400" height="400"></canvas>
+  <script src="maze_game.js"></script>
 </body>
 </html>
