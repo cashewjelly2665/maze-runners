@@ -8,7 +8,8 @@ window.onload = () => {
   const ctx = canvas.getContext("2d");
 
   const mazeSize = 20;
-  const cellSize = canvas.width / mazeSize;
+  const cellWidth = canvas.width / mazeSize;
+  const cellHeight = canvas.height / mazeSize;
   let maze = [];
   let player = { x: 0, y: 0 };
 
@@ -36,15 +37,15 @@ window.onload = () => {
   function drawMaze() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let y = 0; y < mazeSize; y++) {
-      for (let x = 0; x < mazeSize; x++) {
-        ctx.fillStyle = maze[y][x] ? "#000" : "#fff";
-        ctx.fillRect(x*cellSize, y*cellSize, cellSize, cellSize);
+    for (let x = 0; x < mazeSize; x++) {
+      ctx.fillStyle = maze[y][x] ? "#000" : "#fff";
+      ctx.fillRect(x*cellWidth, y*cellHeight, cellWidth, cellHeight);
       }
     }
-
+  
+    // Draw player
     ctx.fillStyle = "red";
-    ctx.fillRect(player.x*cellSize, player.y*cellSize, cellSize, cellSize);
-  }
+    ctx.fillRect(player.x*cellWidth, player.y*cellHeight, cellWidth, cellHeight);
 
   function movePlayer(dx, dy) {
     const newX = player.x + dx;
