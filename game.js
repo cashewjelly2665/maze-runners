@@ -147,10 +147,9 @@ backBtn.onclick = () => {
 
 confirmCreate.onclick = () => {
   const seedValue = seedInput.value;
-  const  = getRandom(seedValue || Math.random()*10000);
   maze = generateMazeDFS(mazeSize);
   player = { x: 0, y: 0 };
-  player2 = { x: mazeSize - 1, y: 0 }; // top right
+  player2 = { x: mazeSize - 1, y: 0 };
   gameOver = false;
   lastMovedPlayer = null;
   canvas.style.display = "block";
