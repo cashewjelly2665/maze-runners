@@ -23,18 +23,42 @@ function getRandom(seed) {
   };
 }
 
-function generateMaze(seedFunc) {
-  const m = [];
-  for (let y = 0; y < mazeSize; y++) {
-    m[y] = [];
-    for (let x = 0; x < mazeSize; x++) {
-      m[y][x] = seedFunc() < 0.3 ? 1 : 0;
+function generateMazeDFS(size) {
+  const maze = Array.from({ length: size }, () => Array(size).fill(1));
+
+  function carve(x, y) {
+    maze[y][x] = 0;
+    const dirs = [
+      [0, -2], [0, 2], [-2, 0], [2, 0]
+    ].sort(() => Math.random() - 0.5);
+    for (const [dx, dy] of dirs) {
+      const nx = x + dx;
+      const ny = y + dy;
+      if (
+        nx >= 0 && nx < size && ny >= 0 && ny < size &&
+        maze[ny][nx] === 1
+      ) {
+        maze[y + dy / 2][x + dx / 2] = 0;
+        carve(nx, ny);
+      }
     }
   }
-  m[0][0] = 0;
-  m[mazeSize-1][mazeSize-1] = 0;
-  m[0][mazeSize-1] = 0;
-  return m;
+
+  if (size % 2 === 0) size -= 1;
+  carve(0, 0);
+
+  maze[0][size - 1] = 0;
+
+  if (maze.length < size) {
+    const newMaze = Array.from({ length: size + 1 }, (_, y) =>
+      Array.from({ length: size + 1 }, (_, x) =>
+        y < maze.length && x < maze.length ? maze[y][x] : 0
+      )
+    );
+    return newMaze;
+  }
+
+  return maze;
 }
 
 function drawMaze() {
@@ -130,8 +154,8 @@ backBtn.onclick = () => {
 
 confirmCreate.onclick = () => {
   const seedValue = seedInput.value;
-  const randomFunc = getRandom(seedValue || Math.random()*10000);
-  maze = generateMaze(randomFunc);
+  const  = getRandom(seedValue || Math.random()*10000);
+  maze = generateMazeDFS(mazeSize);
   player = { x: 0, y: 0 };
   player2 = { x: mazeSize - 1, y: 0 }; // top right
   gameOver = false;
