@@ -4,6 +4,7 @@ const seedInput = document.getElementById("seedInput");
 const confirmCreate = document.getElementById("confirmCreate");
 const backBtn = document.getElementById("backBtn");
 const canvas = document.getElementById("mazeCanvas");
+const timerDisplay = document.getElementById("timerDisplay");
 const ctx = canvas.getContext("2d");
 
 const mazeSize = 20;
@@ -14,6 +15,11 @@ let player = { x: 0, y: 0 }; // red, top left
 let player2 = { x: mazeSize - 1, y: 0 }; // blue, top right
 let gameOver = false;
 let lastMovedPlayer = null; // 1 for red, 2 for blue
+
+let tagActive = false;
+let timer = 60;
+let timerInterval = null;
+let itPlayer = 1; // 1 for red, 2 for blue
 
 const keys = {};
 document.addEventListener("keydown", e => { keys[e.key] = true; });
@@ -71,15 +77,27 @@ function drawMaze() {
     }
   }
 
+  // Draw player 1 (red)
   ctx.fillStyle = "red";
   ctx.fillRect(player.x * cellWidth, player.y * cellHeight, cellWidth, cellHeight);
-
+  // Draw player 2 (blue)
   ctx.fillStyle = "blue";
   ctx.fillRect(player2.x * cellWidth, player2.y * cellHeight, cellWidth, cellHeight);
+
+  if (tagActive) {
+    ctx.strokeStyle = "yellow";
+    ctx.lineWidth = 4;
+    if (itPlayer === 1) {
+      ctx.strokeRect(player.x * cellWidth, player.y * cellHeight, cellWidth, cellHeight);
+    } else {
+      ctx.strokeRect(player2.x * cellWidth, player2.y * cellHeight, cellWidth, cellHeight);
+    }
+    ctx.lineWidth = 1;
+  }
 }
 
 function checkWin() {
-  if (player.x === player2.x && player.y === player2.y) {
+  if (!tagActive && player.x === player2.x && player.y === player2.y) {
     gameOver = true;
     setTimeout(() => {
       if (lastMovedPlayer === 1) {
@@ -106,6 +124,7 @@ function movePlayer(dx, dy) {
   }
   drawMaze();
   checkWin();
+  checkTag();
 }
 
 function movePlayer2(dx, dy) {
@@ -121,6 +140,7 @@ function movePlayer2(dx, dy) {
   }
   drawMaze();
   checkWin();
+  checkTag();
 }
 
 function gameLoop() {
@@ -139,12 +159,27 @@ function gameLoop() {
   setTimeout(gameLoop, 100);
 }
 
+function checkTag() {
+  if (tagActive && player.x === player2.x && player.y === player2.y) {
+    if (itPlayer === 1) itPlayer = 2;
+    else itPlayer = 1;
+    updateTimerDisplay();
+  }
+}
+
+function updateTimerDisplay() {
+  timerDisplay.textContent = `Time: ${timer} | ${itPlayer === 1 ? "Red" : "Blue"} is IT`;
+}
+
 createBtn.onclick = () => {
   createBtn.style.display = "none";
   timedTagBtn.style.display = "none";
   seedInput.style.display = "block";
   confirmCreate.style.display = "block";
   backBtn.style.display = "block";
+  timerDisplay.style.display = "none";
+  clearInterval(timerInterval);
+  tagActive = false;
 };
 
 backBtn.onclick = () => {
@@ -154,6 +189,9 @@ backBtn.onclick = () => {
   confirmCreate.style.display = "none";
   backBtn.style.display = "none";
   canvas.style.display = "none";
+  timerDisplay.style.display = "none";
+  clearInterval(timerInterval);
+  tagActive = false;
 };
 
 confirmCreate.onclick = () => {
@@ -166,10 +204,38 @@ confirmCreate.onclick = () => {
   gameOver = false;
   lastMovedPlayer = null;
   canvas.style.display = "block";
+  timerDisplay.style.display = "none";
+  tagActive = false;
+  clearInterval(timerInterval);
   drawMaze();
   gameLoop();
 };
 
 timedTagBtn.onclick = () => {
-  alert("Join maze clicked!");
+  const seed = Math.floor(Math.random() * 1000000);
+  const rng = seededRandom(seed);
+  maze = generateMazeDFS(mazeSize, rng);
+  player = { x: 0, y: 0 };
+  player2 = { x: mazeSize - 1, y: 0 };
+  gameOver = false;
+  lastMovedPlayer = null;
+  canvas.style.display = "block";
+  tagActive = true;
+  timer = 60;
+  itPlayer = 1 + Math.floor(Math.random() * 2);
+  timerDisplay.style.display = "inline";
+  updateTimerDisplay();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timer--;
+    updateTimerDisplay();
+    if (timer <= 0) {
+      clearInterval(timerInterval);
+      tagActive = false;
+      alert(itPlayer === 1 ? "Red loses!" : "Blue loses!");
+      timerDisplay.style.display = "none";
+    }
+  }, 1000);
+  drawMaze();
+  gameLoop();
 };
