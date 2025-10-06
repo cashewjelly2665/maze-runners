@@ -115,19 +115,6 @@ function movePlayer2(dx, dy) {
   checkWin();
 }
 
-document.addEventListener("keydown", e => {
-  if (gameOver) return;
-  if (e.key === "w") movePlayer(0, -1);
-  else if (e.key === "s") movePlayer(0, 1);
-  else if (e.key === "a") movePlayer(-1, 0);
-  else if (e.key === "d") movePlayer(1, 0);
-
-  else if (e.key === "ArrowUp") movePlayer2(0, -1);
-  else if (e.key === "ArrowDown") movePlayer2(0, 1);
-  else if (e.key === "ArrowLeft") movePlayer2(-1, 0);
-  else if (e.key === "ArrowRight") movePlayer2(1, 0);
-});
-
 createBtn.onclick = () => {
   createBtn.style.display = "none";
   joinBtn.style.display = "none";
